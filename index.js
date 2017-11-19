@@ -1,3 +1,6 @@
+/**
+ * @author Pimenta
+ */
 class Message {
   constructor (text = '', created = Date.now()) {
     this.text = text;
@@ -31,6 +34,9 @@ class ImageMessage extends Message {
       `-- Thumbnail: ${this.thumbnail}`;
   }
 }
+
+var text = 'Some text';
+
 
 var mensagem = new Message();
 var photoMessage = new ImageMessage();
