@@ -1,48 +1,56 @@
+const Message = require('./message.model');
+const ImageMessage = require('./image-message.model');
+const fs = require('fs');
+const path = require('path');
 /**
  * @author Pimenta
  */
-class Message {
-  constructor (text = '', created = Date.now()) {
-    this.text = text;
-    this.created = created;
+
+const mensagem = new Message();
+const photoMessage = new ImageMessage();
+
+
+class MessagesService {
+
+  constructor() {
+    let resolvePromise;
+    let rejectPromise;
+    //carrega o arquivo.
+    const filePath = path.join(__dirname, 'messages.json');
+
+    /**
+     * Promise é um objeto usado para processamento assincrono, que representa um valor
+     * que pode estar disponivel agora, no futuro ou nunca.
+     */
+    this.messagesPromise = new Promise( (resolve, reject) => {
+      resolvePromise = resolve;
+      rejectPromise = reject;
+    });
+    fs.readFile(filePath, {encoding: 'utf-8'}, (err, data) => {
+      if (err) {
+        rejectPromise(err);
+      } else {
+        const dataArray = JSON.parse(data);
+        const dataObj = dataArray.map(item => new Message(item.text, item.created));
+        resolvePromise(dataObj);
+      }
+    });
   }
 
-  get created() {
-    return this._created;
-  }
-  set created(created) {
-    if (!created || isNaN(created)) {
-      throw new Error('Invalid created');
-    }
-    this._created = created;
-  }
-
-  toString() {
-    return `Message created at: ${this.created} - Text: ${this.text}`;
+  get messages() {
+    return this.messagesPromise;
   }
 }
 
-class ImageMessage extends Message {
-  constructor(text = '', created = Date.now(), url = '', thumbnail = '') {
-    super(text, created);
-    this.url = url;
-    this.thumbnail = thumbnail;
-  }
-  toString() {
-    return `Photo ${super.toString()}` +
-      `-- Url: ${this.url}` +
-      `-- Thumbnail: ${this.thumbnail}`;
-  }
+const messagesService  = new MessagesService();
+
+messagesService.messages.then((messages) => {
+//resolve
+for (let x = 0; x < messages.length; x+=1) {
+  console.log(messages[x]);
 }
+}).catch((err) => {
+//reject
+console.log(err);
+});
 
-var text = 'Some text';
-
-
-var mensagem = new Message();
-var photoMessage = new ImageMessage();
-
-console.log(String(mensagem));
-console.log(String(photoMessage));
-
-console.log(photoMessage instanceof Message);
-console.log(Message instanceof ImageMessage);
