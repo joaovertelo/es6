@@ -1,3 +1,6 @@
+/**
+ * @author Pimenta
+ */
 class Message {
   constructor (text = '', created = Date.now()) {
     this.text = text;
@@ -19,6 +22,27 @@ class Message {
   }
 }
 
+class ImageMessage extends Message {
+  constructor(text = '', created = Date.now(), url = '', thumbnail = '') {
+    super(text, created);
+    this.url = url;
+    this.thumbnail = thumbnail;
+  }
+  toString() {
+    return `Photo ${super.toString()}` +
+      `-- Url: ${this.url}` +
+      `-- Thumbnail: ${this.thumbnail}`;
+  }
+}
+
+var text = 'Some text';
+
+
 var mensagem = new Message();
+var photoMessage = new ImageMessage();
 
 console.log(String(mensagem));
+console.log(String(photoMessage));
+
+console.log(photoMessage instanceof Message);
+console.log(Message instanceof ImageMessage);
